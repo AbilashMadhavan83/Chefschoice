@@ -3,10 +3,7 @@ package com.example.chefschoice.ui.favorites
 import android.content.ContentValues
 import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.chefschoice.data.repository.AppRepository
 import com.example.chefschoice.data.enums.ApiStatus
 import com.example.chefschoice.data.model.*
@@ -22,6 +19,8 @@ class FavoritesViewModel(private val repository: AppRepository) : ViewModel() {
     init {
 
     }
+
+    val allFavorites: LiveData<List<MealInformation>> = repository.allFavorites.asLiveData()
 
 
 

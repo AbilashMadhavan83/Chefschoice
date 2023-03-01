@@ -1,18 +1,21 @@
 package com.example.chefschoice.ui.categories
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chefschoice.app.App
 import com.example.chefschoice.data.model.Meal
 import com.example.chefschoice.data.model.MealCategory
+import com.example.chefschoice.data.model.MealInformation
 import com.example.chefschoice.databinding.FragmentCategoriesBinding
-import com.example.chefschoice.ui.home.CategoryAdapter
+import com.example.chefschoice.ui.home.HomeFragmentDirections
 
 
 class CategoriesFragment : Fragment(), ICategories,IMeals  {
@@ -90,7 +93,22 @@ class CategoriesFragment : Fragment(), ICategories,IMeals  {
     }
 
     override fun onCellClickListener(meal: Meal) {
-        TODO("Not yet implemented")
+
+        fun loadMeals(mealInformation: MealInformation?) {
+
+//            val intent = Intent(this@CategoriesFragment.requireContext(), MealsDetailsActivity::class.java)
+//            intent.putExtra("meals", mealInformation)
+//            //intent.putExtra("user", user)
+//            startActivity(intent)
+            if (mealInformation != null) {
+                val action = CategoriesFragmentDirections.actionNavigationCategoriesToMealsDetailsFragment(mealInformation)
+                findNavController().navigate(action)
+            }
+
+
+        }
+        viewModel.observeMealInformation(meal.strMeal).observe({ lifecycle }, ::loadMeals)
+
     }
 
 

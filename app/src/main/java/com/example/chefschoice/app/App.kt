@@ -1,5 +1,6 @@
 package com.example.chefschoice.app
 import android.app.Application
+import com.example.chefschoice.data.network.local.db.AppRoomDatabase
 import com.example.chefschoice.data.network.remote.api.IApiService
 import com.example.chefschoice.data.network.remote.service.ServiceBuilder
 import com.example.chefschoice.data.repository.AppRepository
@@ -23,15 +24,17 @@ class App: Application() {
         // No need to cancel this scope as it'll be torn down with the process
 
 
-//        val applicationScope = CoroutineScope(SupervisorJob())
-//
-//        // Using by lazy so the database and the repository are only created when they're needed
-//        // rather than when the application starts
-//        val database by lazy { WordRoomDatabase.getDatabase(this, applicationScope) }
-//        repository = AppRepository(iApi,database.wordDao())
+        //     No need to cancel this scope as it'll be torn down with the process
+        val applicationScope = CoroutineScope(SupervisorJob())
 
+        // Using by lazy so the database and the repository are only created when they're needed
+        // rather than when the application starts
+        val iDao by lazy { AppRoomDatabase.getDatabase(this, applicationScope) }
 
-        repository = AppRepository(iApi)
+        //val repository by lazy { AppRepository(iApi,iDao.iWordDao()) }
+
+        repository = AppRepository(iApi,iDao.iAppDao())
+
 
     }
 

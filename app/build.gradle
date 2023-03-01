@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-android'
     id 'kotlin-kapt'
@@ -17,6 +18,15 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+//        javaCompileOptions {
+//            annotationProcessorOptions {
+//                arguments = ["parcelableClasses": "com.example.chefschoice.data.model.MealDetail"]
+//            }
+//        }
+
+
+
     }
 
     buildTypes {
@@ -73,6 +83,11 @@ dependencies {
 
     // Coil
     implementation "io.coil-kt:coil:1.1.1"
+
+    // Room components
+    implementation 'androidx.room:room-ktx:2.4.2'
+    kapt 'androidx.room:room-compiler:2.4.2'
+    androidTestImplementation 'androidx.room:room-testing:2.4.2'
 
 //    // Room components
 //    implementation "androidx.room:room-runtime:2.5.0"

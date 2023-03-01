@@ -16,6 +16,7 @@
 package com.example.chefschoice.data.repository
 import androidx.annotation.WorkerThread
 import com.example.chefschoice.data.model.*
+import com.example.chefschoice.data.network.local.dao.IAppDao
 //import com.example.chefschoice.data.network.local.dao.IAppDao
 import com.example.chefschoice.data.network.remote.api.IApiService
 import kotlinx.coroutines.flow.Flow
@@ -25,8 +26,9 @@ import kotlinx.coroutines.flow.Flow
  * Abstracted Repository as promoted by the Architecture Guide.
  * https://developer.android.com/topic/libraries/architecture/guide.html
  */
-class AppRepository(private val iApi: IApiService) {
-    //(private val iApi: IApiService, private val iDao: IAppDao)
+class AppRepository(private val iApi: IApiService,private val iDao: IAppDao) {
+
+
 
     //Lookup a single random meal
     suspend fun getSingleRandomMeal(): RandomMealResponse?  =  iApi.getSingleRandomMeal()
@@ -40,7 +42,19 @@ class AppRepository(private val iApi: IApiService) {
     //Meals by Category // find item
     suspend fun getMealsByCategory(strCategory: String?): MealsResponse? = iApi.getMealsByCategory(strCategory)
 
+    //Search Meals
+    suspend fun getMeals(strMeal:String?): RandomMealResponse?  =  iApi.getMeals(strMeal)
 
+
+    // Room executes all queries on a separate thread.
+    // Observed Flow will notify the observer when the data has changed.
+    val allFavorites: Flow<List<MealInformation>> = iDao.getMyFavorites()
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun insertFavorites(mealInformation: MealInformation) {
+        iDao.insert(mealInformation)
+    }
 
 
 

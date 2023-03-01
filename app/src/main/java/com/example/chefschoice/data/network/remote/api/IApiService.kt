@@ -26,7 +26,11 @@ interface IApiService {
 
     //https://www.themealdb.com/api/json/v1/1/filter.php?&i=Beef
     @GET("filter.php?")
-    suspend fun getMealsByCategory(@Query("i") strCategory:String?): MealsResponse?
+    suspend fun getMealsByCategory(@Query("c") strCategory:String?): MealsResponse?
+
+    //www.themealdb.com/api/json/v1/1/search.php?s=Arrabiata
+    @GET("search.php?")
+    suspend fun getMeals(@Query("s") strMeal:String?): RandomMealResponse?
 
 
 

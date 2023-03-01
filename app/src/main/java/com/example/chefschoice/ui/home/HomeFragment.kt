@@ -8,18 +8,17 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.chefschoice.R
 import com.example.chefschoice.app.App
-import com.example.chefschoice.data.model.MealCategory
-import com.example.chefschoice.data.model.MealDetail
-import com.example.chefschoice.data.model.PopularMeal
-import com.example.chefschoice.data.model.User
+import com.example.chefschoice.data.model.*
 import com.example.chefschoice.databinding.FragmentHomeBinding
-import com.example.chefschoice.ui.mealDetails.MealsDetailsActivity
+import com.example.chefschoice.ui.categories.CategoriesFragmentDirections
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeFragment : Fragment(),IPopularMeal,ICategory {
 
@@ -31,7 +30,9 @@ class HomeFragment : Fragment(),IPopularMeal,ICategory {
 
     private lateinit var adapter: PopularItemsAdapter
     private lateinit var categoryAdapter: CategoryAdapter
-    private lateinit var meals: MealDetail
+    //private lateinit var meals: MealDetail
+
+    private lateinit var mealInformation: MealInformation
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -40,6 +41,7 @@ class HomeFragment : Fragment(),IPopularMeal,ICategory {
     private val viewModel: HomeViewModel by viewModels {
         HomeViewModelFactory((activity?.application as App).repository)
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -80,7 +82,7 @@ class HomeFragment : Fragment(),IPopularMeal,ICategory {
         }
         viewModel.category.observe({ lifecycle }, ::loadCategory)
 
-        viewModel.loadSingleRandomMeal()
+        //viewModel.loadSingleRandomMeal()
 
 
 
@@ -88,18 +90,38 @@ class HomeFragment : Fragment(),IPopularMeal,ICategory {
 
             if (meals != null) {
 
-                this@HomeFragment.meals = meals
+                //this@HomeFragment.meals = meals
 
                 binding.imgRandomMeal.load(meals.strMealThumb){
                     build()
                 }
                 binding.txtStrMeal.text = meals.strMeal
 
-
-
+                this@HomeFragment.mealInformation = MealInformation(
+                    mealId              = meals.idMeal?.toInt() ?: 0,
+                    mealName            = meals.strMeal.toString(),
+                    mealCountry         = meals.strArea.toString(),
+                    mealCategory        = meals.strCategory.toString(),
+                    mealInstruction     = meals.strInstructions.toString(),
+                    mealThumb           = meals.strMealThumb.toString(),
+                    mealYoutubeLink     = meals.strYoutube.toString()
+                )
             }
         }
         viewModel.singleRandomMeal.observe({ lifecycle }, ::loadSingleRandomMeal)
+
+//        fun loadSingleRandomMeal(mealInformation: MealInformation?) {
+//            if (mealInformation != null) {
+//                binding.imgRandomMeal.load(mealInformation.mealName){
+//                    build()
+//                }
+//                binding.txtStrMeal.text = mealInformation.mealInstruction
+//                this@HomeFragment.mealInformation = mealInformation
+//
+//            }
+//
+//        }
+//        viewModel.mealInformation.observe({ lifecycle }, ::loadSingleRandomMeal)
 
         viewModel.loadPopularItems()
 
@@ -139,11 +161,21 @@ class HomeFragment : Fragment(),IPopularMeal,ICategory {
 
         binding.imgRandomMeal.setOnClickListener {
 
+
+
             //val user = User("John Doe", 25)
-            val intent = Intent(this@HomeFragment.requireContext(), MealsDetailsActivity::class.java)
-            intent.putExtra("meals", this@HomeFragment.meals)
-            //intent.putExtra("user", user)
-            startActivity(intent)
+//            val intent = Intent(this@HomeFragment.requireContext(), MealsDetailsActivity::class.java)
+//            intent.putExtra("meals", this@HomeFragment.mealInformation)
+//            //intent.putExtra("user", user)
+//            startActivity(intent)
+
+            val action = HomeFragmentDirections.actionNavigationHomeToMealsDetailsFragment(this@HomeFragment.mealInformation)
+            //action.setMyClass(this@HomeFragment.mealInformation)
+            findNavController().navigate(action)
+
+
+
+
         }
     }
 
@@ -157,11 +189,21 @@ class HomeFragment : Fragment(),IPopularMeal,ICategory {
         _binding = null
     }
 
-    override fun onCellClickListener(popularMeal: PopularMeal) {
-        TODO("Not yet implemented")
+    override fun onCellClickListener(popularMeal: PopularMeal?) {
+
+        fun loadMeals(mealInformation: MealInformation?) {
+
+            if (mealInformation != null){
+                val action = HomeFragmentDirections.actionNavigationHomeToMealsDetailsFragment(mealInformation)
+                findNavController().navigate(action)
+            }
+        }
+        viewModel.observeMealInformation(popularMeal?.strMeal).observe({ lifecycle }, ::loadMeals)
     }
 
-    override fun onCellClickListener(category: MealCategory) {
-        TODO("Not yet implemented")
+    override fun onCellClickListener(category: MealCategory?) {
+        val action = HomeFragmentDirections.actionNavigationHomeToNavigationCategories()
+        findNavController().navigate(action)
     }
 }
+
